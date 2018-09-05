@@ -1,0 +1,41 @@
+version: '2'
+
+services:
+  #The web server:
+  web_host:
+    build:
+      context: .
+      dockerfile: web.Dockerfile
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./conf/php.ini:/usr/local/etc/php/php.ini
+      - ./web:/var/www/html
+    container_name: expenses_web
+
+  #Mysql Database
+  db:
+    build:
+      context: .
+      dockerfile: db.Dockerfile
+    environment:
+      MYSQL_ROOT_PASSWORD: kurtatebanica
+      MYSQL_DATABASE: pestart_car_expenses
+      MYSQL_USER: pestart_expense
+      MYSQL_PASSWORD: avto-r4zhod1
+    volumes:
+      - ./db:/var/lib/mysql   
+    container_name: expenses_db
+
+  #phpmyadmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    links:
+      - db:mysql
+    environment:
+      MYSQL_USERNAME: root
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - '8080:80'
+    container_name: phpmyadmin
